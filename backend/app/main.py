@@ -3,11 +3,13 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from . import models, schemas, auth, database, stripe_utils
+from . import models, schemas, auth, database, stripe_utils, security
 from .database import engine, get_db, init_db
 from datetime import timedelta, datetime
 import os
+import re
 import requests
 from typing import List
 
@@ -24,6 +26,17 @@ from jinja2 import Environment, FileSystemLoader
 from apscheduler.schedulers.background import BackgroundScheduler
 
 app = FastAPI(title="ComplyScan API")
+
+# ─── Security Middleware ───────────────────────────────────────────────────────
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:8002").split(","),
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "Stripe-Signature"],
+)
 
 # Templates and Static files
 templates = Jinja2Templates(directory="/home/team/shared/backend/app/templates")
@@ -69,6 +82,12 @@ async def get_admin_user(current_user: models.User = Depends(get_current_user)):
 
 @app.post("/auth/register", response_model=schemas.User)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Input validation
+    if not security.validate_email(user.email):
+        raise HTTPException(status_code=400, detail="Invalid email format")
+    if len(user.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -159,6 +178,11 @@ async def start_scan(
     current_user: models.User = Depends(get_current_user), 
     db: Session = Depends(get_db)
 ):
+    # Security: Validate URL
+    if not security.validate_url(scan_req.url):
+        raise HTTPException(status_code=400, detail="Invalid or blocked URL")
+    if scan_req.compliance_type not in ("gdpr", "soc2", "ccpa", "all"):
+        raise HTTPException(status_code=400, detail="Invalid compliance type")
     # Check if domain exists or create one
     domain = db.query(models.Domain).filter(
         models.Domain.url == scan_req.url, 
@@ -283,6 +307,12 @@ async def quick_scan(
     compliance_type: str = Form("gdpr"),
     db: Session = Depends(get_db)
 ):
+    # Security: Validate URL
+    if not security.validate_url(url):
+        raise HTTPException(status_code=400, detail="Invalid or blocked URL")
+    if compliance_type not in ("gdpr", "soc2", "ccpa", "all"):
+        raise HTTPException(status_code=400, detail="Invalid compliance type")
+    
     tenant = db.query(models.Tenant).filter(models.Tenant.name == "Demo Tenant").first()
     if not tenant:
         tenant = models.Tenant(name="Demo Tenant")
@@ -313,14 +343,18 @@ async def quick_scan(
     background_tasks.add_task(run_scan_task, new_scan.id, url, tenant.id, compliance_type)
     
     response = RedirectResponse(url=f"/dashboard?scan_id={new_scan.id}", status_code=303)
-    response.set_cookie(key="user_email", value=user.email)
+    security.secure_cookie(response, key="user_email", value=user.email)
     return response
 
 # --- Admin Panel Routes ---
 
 @app.get("/admin/dashboard", response_class=HTMLResponse)
 async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
-    # Statistics
+    # Simple admin auth via env var key
+    admin_key = request.headers.get("X-Admin-Key") or request.cookies.get("admin_key")
+    if admin_key != os.getenv("ADMIN_SECRET_KEY", "admin"):
+        raise HTTPException(status_code=403, detail="Admin access denied")
+    # Set admin cookie for session
     total_tenants = db.query(models.Tenant).count()
     total_scans = db.query(models.Scan).count()
     total_users = db.query(models.User).count()
@@ -360,6 +394,10 @@ async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/admin/tenants", response_class=HTMLResponse)
 async def admin_tenants(request: Request, db: Session = Depends(get_db)):
+    # Admin auth
+    admin_key = request.headers.get("X-Admin-Key") or request.cookies.get("admin_key")
+    if admin_key != os.getenv("ADMIN_SECRET_KEY", "admin"):
+        raise HTTPException(status_code=403, detail="Admin access denied")
     tenants = db.query(models.Tenant).all()
     # Add domain/scan counts to each tenant object for the template
     for t in tenants:
@@ -377,6 +415,10 @@ async def admin_tenants(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/admin/revenue", response_class=HTMLResponse)
 async def admin_revenue(request: Request, db: Session = Depends(get_db)):
+    # Admin auth
+    admin_key = request.headers.get("X-Admin-Key") or request.cookies.get("admin_key")
+    if admin_key != os.getenv("ADMIN_SECRET_KEY", "admin"):
+        raise HTTPException(status_code=403, detail="Admin access denied")
     active_tenants = db.query(models.Tenant).filter(models.Tenant.subscription_status == "active").all()
     
     plan_counts = {"Starter": 0, "Growth": 0, "Enterprise": 0}
@@ -520,3 +562,63 @@ def scheduled_scan():
         run_scan_task(new_scan.id, new_scan.url, old_scan.tenant_id, old_scan.compliance_type)
 
 scheduler.add_job(scheduled_scan, 'interval', days=7)
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
