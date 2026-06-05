@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ white_label.name }} Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .brand-blue { color: {{ white_label.brand_color }}; }
+        .bg-brand-blue { background-color: {{ white_label.brand_color }}; }
+        .brand-green { color: #10b981; }
+        .bg-brand-green { background-color: #10b981; }
+        .sidebar-active { background-color: rgba(16, 185, 129, 0.1); color: #10b981; border-right: 4px solid #10b981; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white h-screen border-r sticky top-0 hidden md:block">
+        <div class="p-6 flex items-center gap-2 mb-8">
+            <img src="{{ white_label.logo_url }}" alt="Logo" class="h-8">
+            <span class="text-xl font-bold brand-blue">{{ white_label.name }}</span>
+        </div>
+        <nav class="space-y-1">
+            <a href="#" class="flex items-center gap-3 px-6 py-3 sidebar-active font-medium transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                Dashboard
+            </a>
+            <a href="#" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-brand-blue transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                Taramalarım
+            </a>
+            <a href="#" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-brand-blue transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                Ayarlar
+            </a>
+        </nav>
+        <div class="absolute bottom-0 w-full p-6 border-t">
+            <a href="#" class="flex items-center gap-3 text-slate-500 hover:text-red-500 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Çıkış Yap
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 min-h-screen overflow-y-auto">
+        <!-- Top Bar -->
+        <header class="bg-white border-b px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-xl font-bold brand-blue">
+                Domain Analizi: <span class="text-slate-500 font-normal">{{ scan.url }}</span>
+                <span class="ml-2 text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded uppercase tracking-wider">{{ scan.compliance_type }}</span>
+            </h2>
+            <div class="flex items-center gap-6">
+                {% if scan.status == 'completed' %}
+                <form action="/quick-scan" method="post" class="flex gap-2">
+                    <input type="hidden" name="url" value="{{ scan.url }}">
+                    <select name="compliance_type" class="text-xs border rounded px-2 bg-slate-50 outline-none">
+                        <option value="gdpr" {% if scan.compliance_type == 'gdpr' %}selected{% endif %}>GDPR</option>
+                        <option value="soc2" {% if scan.compliance_type == 'soc2' %}selected{% endif %}>SOC2</option>
+                        <option value="ccpa" {% if scan.compliance_type == 'ccpa' %}selected{% endif %}>CCPA</option>
+                        <option value="all" {% if scan.compliance_type == 'all' %}selected{% endif %}>ALL</option>
+                    </select>
+                    <button type="submit" class="bg-brand-green text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Yeniden Tara
+                    </button>
+                </form>
+                {% else %}
+                <div class="flex items-center gap-2 text-brand-blue font-semibold">
+                    <svg class="animate-spin h-5 w-5 text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Tarama Devam Ediyor ({{ scan.status }})...
+                    <script>setTimeout(function(){ location.reload(); }, 5000);</script>
+                </div>
+                {% endif %}
+                <div class="w-10 h-10 bg-slate-200 rounded-full overflow-hidden border">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=003366&color=fff" alt="User">
+                </div>
+            </div>
+        </header>
+
+        <div class="p-8">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <!-- Compliance Score Gauge -->
+                <div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center justify-center relative overflow-hidden">
+                    <h3 class="text-slate-500 text-sm font-semibold mb-4 self-start uppercase tracking-wider">Compliance Skoru</h3>
+                    <div class="relative w-40 h-40">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <path class="text-slate-100" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="text-brand-green" stroke-dasharray="{{ scan.score }}, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center flex-col">
+                            <span class="text-4xl font-bold brand-blue">{{ scan.score }}</span>
+                            <span class="text-xs text-slate-400">/ 100</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 {% if scan.score >= 80 %}text-emerald-600{% elif scan.score >= 50 %}text-amber-600{% else %}text-red-600{% endif %} text-sm font-bold flex items-center gap-1">
+                        {% if scan.score >= 80 %}
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        İyi Durumda
+                        {% elif scan.score >= 50 %}
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+                        Dikkat Gerekiyor
+                        {% else %}
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+                        Riskli Durum
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Cookie Count Card -->
+                <div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">Tespit Edilen Çerezler</h3>
+                        <div class="text-4xl font-bold brand-blue">{{ scan.raw_data.cookie_categorization.values() | map('length') | sum }}</div>
+                    </div>
+                    <div class="space-y-2 mt-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Gerekli</span>
+                            <span class="font-bold">{{ scan.raw_data.cookie_categorization.essential | length }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Pazarlama</span>
+                            <span class="font-bold">{{ scan.raw_data.cookie_categorization.marketing | length }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Analitik</span>
+                            <span class="font-bold">{{ scan.raw_data.cookie_categorization.analytics | length }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policy Status Card -->
+                <div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">Gizlilik Politikası</h3>
+                        <div class="flex items-center gap-2 {% if scan.raw_data.privacy_analysis.overall_policy_score > 0 %}text-emerald-600{% else %}text-red-600{% endif %} font-bold text-xl mt-2">
+                            {% if scan.raw_data.privacy_analysis.overall_policy_score > 0 %}
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Analiz Edildi
+                            {% else %}
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Eksik veya Geçersiz
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                        <div class="text-amber-800 text-xs font-bold mb-1">Puan: {{ scan.raw_data.privacy_analysis.overall_policy_score }} / 100</div>
+                        <p class="text-[10px] text-amber-700">AI Analizi tamamlandı. İyileştirme önerilerini inceleyin.</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if scan.raw_data.security_audit %}
+            <!-- SOC2 / Security Audit Section -->
+            <div class="bg-white p-8 rounded-2xl border shadow-sm mb-8">
+                <h3 class="font-bold brand-blue text-lg mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 20.944a11.955 11.955 0 01-8.618-3.04m17.236 0a11.955 11.955 0 01-8.618 3.04v-9.389m0 9.389a11.955 11.955 0 01-8.618-3.04"></path></svg>
+                    Güvenlik Denetimi (SOC2)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="p-4 rounded-xl border {% if scan.raw_data.security_audit.ssl.valid %}bg-emerald-50 border-emerald-100{% else %}bg-red-50 border-red-100{% endif %}">
+                        <p class="text-xs font-bold uppercase text-slate-500 mb-1">SSL/TLS Durumu</p>
+                        <p class="text-lg font-bold {% if scan.raw_data.security_audit.ssl.valid %}text-emerald-700{% else %}text-red-700{% endif %}">
+                            {{ "Geçerli" if scan.raw_data.security_audit.ssl.valid else "Geçersiz" }}
+                        </p>
+                        <p class="text-[10px] text-slate-500">Versiyon: {{ scan.raw_data.security_audit.ssl.version }}</p>
+                    </div>
+                    <div class="p-4 rounded-xl border bg-slate-50">
+                        <p class="text-xs font-bold uppercase text-slate-500 mb-1">HSTS</p>
+                        <p class="text-lg font-bold {{ 'text-emerald-700' if scan.raw_data.security_audit.encryption_headers.Strict_Transport_Security else 'text-amber-700' }}">
+                            {{ "Aktif" if scan.raw_data.security_audit.encryption_headers.Strict_Transport_Security else "Pasif" }}
+                        </p>
+                    </div>
+                    <div class="p-4 rounded-xl border bg-slate-50">
+                        <p class="text-xs font-bold uppercase text-slate-500 mb-1">CSP</p>
+                        <p class="text-lg font-bold {{ 'text-emerald-700' if scan.raw_data.security_audit.encryption_headers.Content_Security_Policy else 'text-amber-700' }}">
+                            {{ "Aktif" if scan.raw_data.security_audit.encryption_headers.Content_Security_Policy else "Eksik" }}
+                        </p>
+                    </div>
+                    <div class="p-4 rounded-xl border bg-slate-50">
+                        <p class="text-xs font-bold uppercase text-slate-500 mb-1">CORS</p>
+                        <p class="text-lg font-bold text-blue-700">
+                            {{ scan.raw_data.security_audit.access_control.Access_Control_Allow_Origin or "Kapalı" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if scan.raw_data.ccpa_checks %}
+            <!-- CCPA Section -->
+            <div class="bg-white p-8 rounded-2xl border shadow-sm mb-8">
+                <h3 class="font-bold brand-blue text-lg mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    CCPA Uyumluluğu
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex items-center gap-3 p-4 rounded-xl border {{ 'bg-emerald-50 border-emerald-100' if scan.raw_data.ccpa_checks.do_not_sell_link.found else 'bg-red-50 border-red-100' }}">
+                        <div class="p-2 rounded-full {{ 'bg-emerald-500' if scan.raw_data.ccpa_checks.do_not_sell_link.found else 'bg-red-500' }} text-white">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500">Do Not Sell My Info</p>
+                            <p class="text-sm font-bold">{{ "Bulundu" if scan.raw_data.ccpa_checks.do_not_sell_link.found else "Eksik" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 rounded-xl border {{ 'bg-emerald-50 border-emerald-100' if scan.raw_data.ccpa_checks.california_privacy_rights.found else 'bg-red-50 border-red-100' }}">
+                        <div class="p-2 rounded-full {{ 'bg-emerald-500' if scan.raw_data.ccpa_checks.california_privacy_rights.found else 'bg-red-500' }} text-white">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500">CA Privacy Rights</p>
+                            <p class="text-sm font-bold">{{ "Bulundu" if scan.raw_data.ccpa_checks.california_privacy_rights.found else "Eksik" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 rounded-xl border {{ 'bg-emerald-50 border-emerald-100' if scan.raw_data.ccpa_checks.opt_out_mechanism.found else 'bg-amber-50 border-amber-100' }}">
+                        <div class="p-2 rounded-full {{ 'bg-emerald-500' if scan.raw_data.ccpa_checks.opt_out_mechanism.found else 'bg-amber-500' }} text-white">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500">Opt-Out Mekanizması</p>
+                            <p class="text-sm font-bold">{{ "Mevcut" if scan.raw_data.ccpa_checks.opt_out_mechanism.found else "Tespit Edilemedi" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Main Grid: Violations & History -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Violation List -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b flex justify-between items-center">
+                        <h3 class="font-bold brand-blue">İhlaller ve İyileştirme Önerileri</h3>
+                        {% set violations = scan.raw_data.privacy_analysis.findings | selectattr('status', 'ne', 'compliant') | list %}
+                        <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded font-bold">{{ violations | length }} TESPİT</span>
+                    </div>
+                    <div class="divide-y">
+                        {% for finding in scan.raw_data.privacy_analysis.findings %}
+                        {% if finding.status != 'compliant' %}
+                        <!-- Violation Item -->
+                        <div class="p-6 hover:bg-slate-50 transition">
+                            <div class="flex items-start gap-4">
+                                <div class="p-2 {% if finding.status == 'missing' %}bg-red-100 text-red-600{% else %}bg-amber-100 text-amber-600{% endif %} rounded-lg">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between mb-1">
+                                        <h4 class="font-bold">{{ finding.article or finding.control or finding.requirement or "Kriter" }}</h4>
+                                        <span class="text-xs {% if finding.status == 'missing' %}bg-red-600{% else %}bg-amber-500{% endif %} text-white px-2 py-0.5 rounded-full uppercase">{{ finding.status }}</span>
+                                    </div>
+                                    <p class="text-sm text-slate-600 mb-3">{{ finding.finding }}</p>
+                                    <div class="bg-slate-100 p-3 rounded-lg text-xs">
+                                        <span class="font-bold text-slate-700">Çözüm:</span> {{ finding.recommendation }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Sidebar Content: Report & History -->
+                <div class="space-y-8">
+                    <!-- PDF Report Card -->
+                    <div class="bg-brand-blue text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition"></div>
+                        <h3 class="font-bold text-lg mb-2 relative z-10">Compliance Raporu</h3>
+                        <p class="text-blue-100 text-xs mb-6 relative z-10">Tüm analiz detaylarını içeren profesyonel PDF raporunuz hazır.</p>
+                        <a href="/scan/{{ scan.id }}/report/pdf" class="w-full bg-white text-brand-blue py-3 rounded-xl font-bold hover:bg-slate-100 transition flex items-center justify-center gap-2 relative z-10">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            PDF Olarak İndir
+                        </a>
+                    </div>
+
+                    <!-- History -->
+                    <div class="bg-white rounded-2xl border shadow-sm p-6">
+                        <h3 class="font-bold brand-blue mb-4">Tarama Geçmişi</h3>
+                        <div class="space-y-4">
+                            {% for history_scan in scans %}
+                            <div class="flex items-center justify-between border-b pb-3">
+                                <div>
+                                    <div class="text-sm font-bold">{{ history_scan.created_at.strftime('%d %b %Y') }}</div>
+                                    <div class="text-xs text-slate-400">Score: {{ history_scan.score }}/100</div>
+                                </div>
+                                <a href="/dashboard?scan_id={{ history_scan.id }}" class="text-slate-400 hover:text-brand-blue"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page { margin: 2cm; }
+        body { font-family: sans-serif; color: #333; line-height: 1.5; }
+        .header { text-align: center; border-bottom: 2px solid #003366; padding-bottom: 1cm; margin-bottom: 1cm; }
+        .logo { height: 2cm; margin-bottom: 0.5cm; }
+        .title { font-size: 24pt; font-bold; color: #003366; }
+        .subtitle { font-size: 14pt; color: #666; }
+        .section { margin-bottom: 1cm; }
+        .section-title { font-size: 18pt; font-bold; color: #003366; border-bottom: 1px solid #eee; padding-bottom: 0.2cm; margin-bottom: 0.5cm; }
+        .score-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.5cm; border-radius: 0.3cm; text-align: center; margin-bottom: 1cm; }
+        .score-value { font-size: 36pt; font-bold; color: #10b981; }
+        .finding { margin-bottom: 0.5cm; padding: 0.4cm; border-left: 4px solid #ef4444; background: #fff5f5; }
+        .finding.compliant { border-left-color: #10b981; background: #f0fdf4; }
+        .finding.partially_compliant { border-left-color: #f59e0b; background: #fffbeb; }
+        .finding-title { font-weight: bold; margin-bottom: 0.1cm; }
+        .finding-recommendation { font-size: 10pt; color: #4b5563; margin-top: 0.2cm; font-style: italic; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 9pt; color: #999; border-top: 1px solid #eee; padding-top: 0.2cm; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1cm; }
+        th, td { text-align: left; padding: 0.2cm; border-bottom: 1px solid #eee; }
+        th { background: #f8fafc; color: #64748b; font-size: 10pt; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">ComplyScan Pro</div>
+        <div class="subtitle">Web Sitesi Uyumluluk Denetim Raporu</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Özet Bilgiler</div>
+        <table>
+            <tr><th>Hedef URL</th><td>{{ url }}</td></tr>
+            <tr><th>Tarama Tarihi</th><td>{{ date }}</td></tr>
+            <tr><th>Compliance Türü</th><td>{{ compliance_type | upper }}</td></tr>
+            <tr><th>Durum</th><td>{{ status | capitalize }}</td></tr>
+        </table>
+    </div>
+
+    <div class="score-box">
+        <div class="subtitle">Genel Uyumluluk Skoru</div>
+        <div class="score-value">{{ score }} / 100</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Detaylı Bulgular</div>
+        {% for finding in raw_data.privacy_analysis.findings %}
+        <div class="finding {{ finding.status }}">
+            <div class="finding-title">
+                {{ finding.article or finding.control or finding.requirement or "Kriter" }} 
+                - <span style="text-transform: uppercase; font-size: 9pt;">{{ finding.status }}</span>
+            </div>
+            <div class="finding-desc">{{ finding.finding }}</div>
+            {% if finding.recommendation and finding.recommendation != "None." %}
+            <div class="finding-recommendation"><strong>Öneri:</strong> {{ finding.recommendation }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if raw_data.security_audit %}
+    <div class="section">
+        <div class="section-title">Güvenlik Denetimi (SOC2)</div>
+        <table>
+            <tr><th>SSL/TLS</th><td>{{ "Geçerli" if raw_data.security_audit.ssl.valid else "Geçersiz" }} ({{ raw_data.security_audit.ssl.version }})</td></tr>
+            <tr><th>HSTS</th><td>{{ "Aktif" if raw_data.security_audit.encryption_headers.Strict_Transport_Security else "Pasif" }}</td></tr>
+            <tr><th>CSP</th><td>{{ "Aktif" if raw_data.security_audit.encryption_headers.Content_Security_Policy else "Eksik" }}</td></tr>
+            <tr><th>CORS</th><td>{{ raw_data.security_audit.access_control.Access_Control_Allow_Origin or "Kapalı" }}</td></tr>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if raw_data.ccpa_checks %}
+    <div class="section">
+        <div class="section-title">CCPA Uyumluluğu</div>
+        <table>
+            <tr><th>Do Not Sell Link</th><td>{{ "Bulundu" if raw_data.ccpa_checks.do_not_sell_link.found else "Eksik" }}</td></tr>
+            <tr><th>CA Privacy Rights</th><td>{{ "Bulundu" if raw_data.ccpa_checks.california_privacy_rights.found else "Eksik" }}</td></tr>
+            <tr><th>Opt-Out Mechanism</th><td>{{ "Mevcut" if raw_data.ccpa_checks.opt_out_mechanism.found else "Tespit Edilemedi" }}</td></tr>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="section">
+        <div class="section-title">Tespit Edilen Çerezler</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Sayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category, items in raw_data.cookie_categorization.items() %}
+                <tr>
+                    <td>{{ category | capitalize }}</td>
+                    <td>{{ items | length }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        &copy; 2024 ComplyScan Pro - Güvenli ve Uyumlu Web Deneyimi
+    </div>
+</body>
+</html>
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'

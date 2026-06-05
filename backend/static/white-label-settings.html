@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplyScan Pro - White-Label Ayarları</title>
+    <link rel="icon" type="image/png" href="complyscan-logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .brand-blue { color: #003366; }
+        .bg-brand-blue { background-color: #003366; }
+    </style>
+</head>
+<body class="bg-slate-50 flex">
+
+    <!-- Sidebar (Reused from Dashboard) -->
+    <aside class="w-64 bg-white h-screen border-r sticky top-0 hidden md:block shadow-sm">
+        <div class="p-6 flex items-center gap-2 mb-8">
+            <img src="complyscan-logo.png" alt="Logo" class="h-8">
+            <span class="text-xl font-bold brand-blue">Tenant <span class="text-blue-600">Panel</span></span>
+        </div>
+        <nav class="space-y-1">
+            <a href="dashboard.html" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                Dashboard
+            </a>
+            <a href="#" class="flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 border-r-4 border-blue-600 font-medium transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.172-1.172a4 4 0 115.656 5.656L17 13"></path></svg>
+                White-Label
+            </a>
+            <a href="#" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                Ayarlar
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <header class="bg-white border-b px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-xl font-bold brand-blue">Branding & White-Label Ayarları</h2>
+            <button class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-md shadow-blue-100">
+                Değişiklikleri Kaydet
+            </button>
+        </header>
+
+        <div class="p-8 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column: Settings -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Logo Upload -->
+                    <div class="bg-white p-8 rounded-2xl border shadow-sm">
+                        <h3 class="font-bold brand-blue mb-4">Logo Özelleştirme</h3>
+                        <div class="flex items-center gap-6">
+                            <div class="w-24 h-24 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer">
+                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                <span class="text-[10px] font-bold text-slate-500 mt-1 uppercase">Yükle</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold brand-blue mb-1">Şirket Logosu</p>
+                                <p class="text-xs text-slate-400 leading-relaxed">Raporlarda ve müşteri dashboard'unda görüntülenecek logonuz. PNG veya SVG, max 2MB.</p>
+                                <div class="mt-3 flex gap-2">
+                                    <button class="text-xs font-bold text-blue-600 hover:underline">Dosya Seç</button>
+                                    <button class="text-xs font-bold text-red-500 hover:underline">Logoyu Kaldır</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="bg-white p-8 rounded-2xl border shadow-sm">
+                        <h3 class="font-bold brand-blue mb-6">Renk Paleti</h3>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Birincil Renk (Primary)</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" value="#003366" class="w-12 h-12 rounded-lg border-none cursor-pointer">
+                                    <input type="text" value="#003366" class="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <p class="text-[10px] text-slate-400 italic">Butonlar, başlıklar ve ana aksanlar için kullanılır.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">İkincil Renk (Secondary)</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" value="#10b981" class="w-12 h-12 rounded-lg border-none cursor-pointer">
+                                    <input type="text" value="#10b981" class="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <p class="text-[10px] text-slate-400 italic">Başarı durumları ve alternatif aksanlar için kullanılır.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Domain -->
+                    <div class="bg-white p-8 rounded-2xl border shadow-sm">
+                        <h3 class="font-bold brand-blue mb-4">Özel Domain (CNAME)</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-3">
+                                <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <p class="text-xs font-bold text-amber-800 uppercase mb-1">Pro Özellik</p>
+                                    <p class="text-xs text-amber-700 leading-relaxed">Özel domain kullanabilmek için CNAME kaydınızı `cname.complyscan.pro` adresine yönlendirmeniz gerekmektedir.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <input type="text" placeholder="compliance.sirketiniz.com" class="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                <button class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition">Doğrula</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Preview -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl border shadow-sm overflow-hidden sticky top-24">
+                        <div class="px-6 py-4 border-b bg-slate-50">
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Önizleme</h3>
+                        </div>
+                        <div class="p-6">
+                            <!-- Mini Dashboard Mockup -->
+                            <div class="border border-slate-100 rounded-xl shadow-inner bg-slate-50 p-4 space-y-4">
+                                <div class="flex items-center justify-between border-b border-white pb-2">
+                                    <div class="w-12 h-3 bg-slate-200 rounded"></div>
+                                    <div class="w-4 h-4 bg-slate-200 rounded-full"></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="w-full h-20 rounded-lg flex items-center justify-center" style="background-color: #003366;">
+                                        <span class="text-white text-[10px] font-bold uppercase tracking-widest">Sizin Logonuz</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="h-10 bg-white rounded-lg border border-slate-100 shadow-sm flex items-center justify-center">
+                                            <div class="w-4 h-4 rounded-full border-2" style="border-color: #10b981;"></div>
+                                        </div>
+                                        <div class="h-10 bg-white rounded-lg border border-slate-100 shadow-sm flex items-center justify-center">
+                                            <div class="w-6 h-2 rounded" style="background-color: #003366;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="w-full h-8 rounded-lg text-white text-[10px] font-bold" style="background-color: #003366;">CTA Buton</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-4 text-center">Ayarları değiştikçe önizleme güncellenir.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

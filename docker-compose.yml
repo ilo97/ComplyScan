@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  crawler:
+    build: ./crawler
+    ports:
+      - "8000:8000"
+    environment:
+      - CRAWLER_PORT=8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  analyst:
+    build: ./analyst
+    ports:
+      - "8001:8001"
+    environment:
+      - ANALYST_PORT=8001
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - crawler
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backend:
+    build: ./backend
+    ports:
+      - "8002:8002"
+    environment:
+      - BACKEND_PORT=8002
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./complyscan.db}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - ANALYST_URL=http://analyst:8001
+      - CRAWLER_URL=http://crawler:8000
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    depends_on:
+      - analyst
+      - crawler
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  data:

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+*.venv/
+crawler_venv/
+
+# Environment
+.env
+*.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Reports (generated)
+reports/output/
+
+# Crawler output (generated)
+crawler_output/
+
+# Node
+node_modules/
+
+# Docker
+docker-compose.override.yml

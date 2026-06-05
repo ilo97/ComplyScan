@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplyScan Pro - Tenant Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .brand-blue { color: #003366; }
+        .bg-brand-blue { background-color: #003366; }
+        .step-active { background-color: #2563eb; color: white; }
+        .step-inactive { background-color: #e2e8f0; color: #64748b; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <!-- Simple Header -->
+    <header class="bg-white border-b py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <img src="complyscan-logo.png" alt="Logo" class="h-8">
+                <span class="text-xl font-bold brand-blue">ComplyScan <span class="text-blue-600">Pro</span></span>
+            </div>
+            <div class="text-sm text-slate-500 hidden md:block">
+                Sorunuz mu var? <a href="mailto:support@complyscan.pro" class="text-blue-600 font-semibold hover:underline">Destekle İletişime Geçin</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Onboarding Container -->
+    <main class="flex-1 flex items-center justify-center p-6 py-12">
+        <div class="max-w-4xl w-full">
+            <!-- Progress Stepper -->
+            <div class="flex items-center justify-between mb-12 max-w-2xl mx-auto relative">
+                <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -z-10 -translate-y-1/2"></div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-lg step-active">1</div>
+                    <span class="text-xs font-bold text-slate-700">Hesap</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold step-inactive">2</div>
+                    <span class="text-xs font-medium text-slate-400">Domain</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold step-inactive">3</div>
+                    <span class="text-xs font-medium text-slate-400">Plan</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold step-inactive">4</div>
+                    <span class="text-xs font-medium text-slate-400">Ödeme</span>
+                </div>
+            </div>
+
+            <!-- Step Content: Account Info -->
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-5">
+                    <!-- Left Sidebar (Info) -->
+                    <div class="lg:col-span-2 bg-slate-900 text-white p-10 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-4">Hoş Geldiniz!</h2>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-8">
+                                ComplyScan Pro ile müşterilerinize profesyonel GDPR uyumluluk raporları sunmaya sadece birkaç dakika uzaktasınız.
+                            </p>
+                            <ul class="space-y-4">
+                                <li class="flex items-start gap-3 text-sm">
+                                    <svg class="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Kendi logonuzla rapor üretin.</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-sm">
+                                    <svg class="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Müşterilerinize özel paneller sağlayın.</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-sm">
+                                    <svg class="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Sınırsız domain tarama kapasitesi.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-8 border-t border-slate-800">
+                            <p class="text-xs text-slate-500 italic">"Bu platformu kurduktan 48 saat sonra ilk müşterimi kapattım." - Agency X</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Form Area -->
+                    <div class="lg:col-span-3 p-10">
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold brand-blue">Hesap Bilgilerinizi Girin</h3>
+                            <p class="text-sm text-slate-500">Şirketinizi ve yönetici hesabınızı tanımlayalım.</p>
+                        </div>
+
+                        <form class="space-y-5">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-700 uppercase">Şirket Adı</label>
+                                    <input type="text" placeholder="Acme Ltd." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-700 uppercase">Ülke</label>
+                                    <select class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white">
+                                        <option>Türkiye</option>
+                                        <option>Almanya</option>
+                                        <option>İngiltere</option>
+                                        <option>ABD</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-slate-700 uppercase">Yönetici E-posta</label>
+                                <input type="email" placeholder="admin@acme.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-slate-700 uppercase">Şifre Oluştur</label>
+                                <input type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            </div>
+
+                            <div class="flex items-center gap-2 py-2">
+                                <input type="checkbox" id="terms" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+                                <label for="terms" class="text-xs text-slate-500 font-medium">
+                                    <a href="#" class="text-blue-600 hover:underline">Kullanım Koşullarını</a> ve <a href="#" class="text-blue-600 hover:underline">Gizlilik Politikasını</a> okudum, kabul ediyorum.
+                                </label>
+                            </div>
+
+                            <div class="pt-4">
+                                <button type="button" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                                    Devam Et
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <p class="text-center text-xs text-slate-400 mt-6">
+                            Zaten hesabınız var mı? <a href="#" class="text-blue-600 font-bold hover:underline">Giriş Yapın</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Minimal Footer -->
+    <footer class="py-8 text-center text-slate-400 text-xs">
+        &copy; 2024 ComplyScan Pro SaaS. Tüm hakları saklıdır.
+    </footer>
+
+</body>
+</html>
